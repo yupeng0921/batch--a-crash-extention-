@@ -175,7 +175,7 @@ void freeNode(nodeType *p)
 		for (i = 0 ; i < p->opr.number ; i++)
 			freeNode(p->opr.op[i]);
 	} else if (p->type == typeStrCon) {
-		//free(p->strCon.ptr);
+		free(p->strCon.ptr);
 	}
 	free(p);
 }
