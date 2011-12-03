@@ -628,7 +628,7 @@ case 2:
 break;
 case 3:
 #line 40 "batch.y"
-	{ free(interpret(yystack.l_mark[0].nPtr)); freeNode(yystack.l_mark[0].nPtr); }
+	{ free_itpType(interpret(yystack.l_mark[0].nPtr)); freeNode(yystack.l_mark[0].nPtr); }
 break;
 case 4:
 #line 41 "batch.y"

@@ -28,6 +28,13 @@
 
 #define STR_TO_LONG(str) atoll(str)
 
+#define DEBUG
+#ifdef DEBUG
+#define DBG(fmt, args...) fprintf(stdout, "(batchdbg, %s:%d) " fmt, __FUNCTION__, __LINE__, ##args)
+#else
+#defien DBG(fmt, args...)
+#endif
+
 typedef long long int LONG;
 
 typedef enum {

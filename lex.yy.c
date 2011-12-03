@@ -370,12 +370,12 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[94] =
     {   0,
-        0,    0,   30,   28,   25,   26,   28,   28,   16,   28,
-       16,   16,   16,   14,   14,   16,   16,   16,   13,   13,
-       13,   13,   13,   13,   13,   13,   13,   28,   25,   20,
-        0,   12,   21,   23,   24,    0,    0,   14,   18,   19,
-       17,   13,   13,   13,   13,    2,   13,   13,   13,   13,
-       13,   13,   22,    0,   27,   15,   13,   13,    6,    8,
+        0,    0,   30,   28,   25,   26,   28,   28,   24,   28,
+       24,   24,   24,   14,   14,   24,   24,   24,   13,   13,
+       13,   13,   13,   13,   13,   13,   13,   28,   25,   19,
+        0,   12,   20,   22,   23,    0,    0,   14,   17,   18,
+       16,   13,   13,   13,   13,    2,   13,   13,   13,   13,
+       13,   13,   21,    0,   27,   15,   13,   13,    6,    8,
        13,   13,   13,   13,   13,    5,    3,   13,   13,   13,
        13,   13,    7,   13,    4,   13,    1,   13,   13,   13,
        13,   13,   13,   13,   13,    9,   13,   13,   13,   13,
@@ -888,47 +888,47 @@ YY_RULE_SETUP
 case 16:
 YY_RULE_SETUP
 #line 68 "batch.l"
-return *yytext;
+return GE;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 70 "batch.l"
-return GE;
+#line 69 "batch.l"
+return LE;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 71 "batch.l"
-return LE;
+#line 70 "batch.l"
+return EQ;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 72 "batch.l"
-return EQ;
+#line 71 "batch.l"
+return NE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 73 "batch.l"
-return NE;
+#line 72 "batch.l"
+return AND;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 74 "batch.l"
-return AND;
+#line 73 "batch.l"
+return OR;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 75 "batch.l"
-return OR;
+#line 74 "batch.l"
+return PP;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 76 "batch.l"
-return PP;
+#line 75 "batch.l"
+return SS;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 77 "batch.l"
-return SS;
+return *yytext;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP

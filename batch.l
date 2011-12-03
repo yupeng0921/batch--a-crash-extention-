@@ -65,8 +65,6 @@ comment		\/\/.*\n
 			return INTEGER;
 		}
 
-[-()<>=+*/{}.;,%]	return *yytext;
-
 ">="            return GE;
 "<="            return LE;
 "=="            return EQ;
@@ -75,6 +73,8 @@ comment		\/\/.*\n
 "||"            return OR;
 "++"            return PP;
 "--"            return SS;
+
+[-()<>=+*/{}.;,%]	return *yytext;
 
 [ \t]+          ;       /* ignore whitespace */
 \n              { yylineno++; }

@@ -127,7 +127,7 @@ nodeType *opr(int oper, int nops, ...)
 	va_start(ap, nops);
 	for (i = 0 ; i < nops ; i++) {
 		p->opr.op[i] = va_arg(ap, nodeType *);
-		if (p->opr.op[i]) {
+		if (p->opr.op[i] == NULL) {
 			free(p);
 			return NULL;
 		}
@@ -216,6 +216,7 @@ char *call_func(const char *input)
 		return NULL;
 	}
 	p[len] = '\0';
+	fclose(fpr);
 	return p;
 }
 
@@ -326,6 +327,8 @@ itpType *interpret(nodeType *p)
 			}
 			strncpy(pret->pstr, symtab[p->var.index].pstr, len);
 			pret->pstr[len] = '\0';
+			char *testptr;
+			testptr = symtab[p->var.index].pstr;
 		}
 		return pret;
 		break;
@@ -333,16 +336,20 @@ itpType *interpret(nodeType *p)
 		switch(p->opr.name) {
 		case WHILE:
 			pret1 = interpret(p->opr.op[0]);
-			if (pret1 == NULL)
+			if (pret1 == NULL) {
+				free_itpType(pret);
 				return NULL;
+			}
 			while ((pret1->type == typeLong && pret1->ival) ||
-				pret1->type == typeStr && pret1->pstr) {
+				(pret1->type == typeStr && pret1->pstr)) {
 				pret2 = interpret(p->opr.op[1]);
 				free_itpType(pret1);
 				free_itpType(pret2);
 				pret1 = interpret(p->opr.op[0]);
-				if (pret1 == NULL)
+				if (pret1 == NULL) {
+					free_itpType(pret);
 					return NULL;
+				}
 			}
 			free_itpType(pret1);
 			return pret;
@@ -380,6 +387,8 @@ itpType *interpret(nodeType *p)
 				free_itpType(pret1);
 			if (pret2)
 				free_itpType(pret2);
+			return pret;
+			break;
 		case '=':
 			pret2 = interpret(p->opr.op[1]);
 			if (pret2 == NULL)
@@ -392,16 +401,23 @@ itpType *interpret(nodeType *p)
 				symtab[p->opr.op[0]->var.index].pstr = pret2->pstr;
 			}
 			symtab[p->opr.op[0]->var.index].type = pret2->type;
-			free_itpType(pret2);
+			free(pret2); /* do not free pret2->pstr, as it is used by the variable */
 			return pret;
 			break;
 		case UMINUS:
 			pret1 = interpret(p->opr.op[0]);
 			if (pret1 == NULL)
 				return NULL;
-			if (pret1->type == typeLong)
-				pret1->ival = -pret1->ival;
-			return pret1;
+			if (pret1->type == typeLong) {
+				pret->type = typeLong;
+				pret->ival = -pret1->ival;
+			} else {
+				free_itpType(pret1);
+				free_itpType(pret);
+				return NULL;
+			}
+			free_itpType(pret1);
+			return pret;
 			break;
 		case PP:
 			if (symtab[p->opr.op[0]->var.index].type == typeLong) {
@@ -491,25 +507,25 @@ itpType *interpret(nodeType *p)
 			}
 			if (pret1->type == typeLong && pret2->type == typeLong) {
 				pret->type = typeLong;
-				if (p->type == '-')
+				if (p->opr.name == '-')
 					pret->ival = pret1->ival - pret2->ival;
-				else if (p->type == '*')
+				else if (p->opr.name == '*')
 					pret->ival = pret1->ival * pret2->ival;
-				else if (p->type == '/')
+				else if (p->opr.name == '/')
 					pret->ival = pret1->ival / pret2->ival;
-				else if (p->type == '<')
+				else if (p->opr.name == '<')
 					pret->ival = pret1->ival < pret2->ival;
-				else if (p->type == '>')
+				else if (p->opr.name == '>')
 					pret->ival = pret1->ival > pret2->ival;
-				else if (p->type == '%')
+				else if (p->opr.name == '%')
 					pret->ival = pret1->ival % pret2->ival;
-				else if (p->type == AND)
+				else if (p->opr.name == AND)
 					pret->ival = pret1->ival && pret2->ival;
-				else if (p->type == OR)
+				else if (p->opr.name == OR)
 					pret->ival = pret1->ival || pret2->ival;
-				else if (p->type == GE)
+				else if (p->opr.name == GE)
 					pret->ival = pret1->ival >= pret2->ival;
-				else if (p->type == LE)
+				else if (p->opr.name == LE)
 					pret->ival = pret1->ival <= pret2->ival;
 				free_itpType(pret1);
 				free_itpType(pret2);
@@ -536,7 +552,7 @@ itpType *interpret(nodeType *p)
 			}
 			if (pret1->type == typeLong && pret2->type == typeLong) {
 				pret->type = typeLong;
-				if (p->type == EQ)
+				if (p->opr.name == EQ)
 					pret->ival = pret1->ival == pret2->ival;
 				else if (pret->type == NE)
 					pret->ival = pret1->ival != pret2->ival;
@@ -545,10 +561,11 @@ itpType *interpret(nodeType *p)
 				return pret;
 			} else if (pret1->type == typeStr && pret2->type == typeStr) {
 				pret->type == typeLong;
-				if (p->type == EQ)
+				if (p->opr.name == EQ)
 					pret->ival = !strcmp(pret1->pstr, pret2->pstr);
-				else if (p->type == NE)
+				else if (p->opr.name == NE) {
 					pret->ival = !!strcmp(pret1->pstr, pret2->pstr);
+				}
 				free_itpType(pret1);
 				free_itpType(pret2);
 				return pret;

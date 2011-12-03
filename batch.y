@@ -37,7 +37,7 @@ program:
 init: /* NULL*/             { yylineno = 0; initSymTable();}
   ;
 parsed:
-    parsed stmt             { free(interpret($2)); freeNode($2); }
+    parsed stmt             { free_itpType(interpret($2)); freeNode($2); }
   | parsed error separator  { fprintf(stdout, "error!!\n"); yyerrok; }
   | /* NULL */
   ;
