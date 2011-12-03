@@ -1,0 +1,1080 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+batch script language manual
+\end_layout
+
+\begin_layout Author
+by hank (or yupeng)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\noindent
+If you have any question or advice, you can send email to one of these address:
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "pyu@redhat.com"
+target "pyu@redhat.com"
+type "mailto:"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset href
+LatexCommand href
+name "yupeng0921@gmail.com"
+target "yupeng0921@gmail.com"
+type "mailto:"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Version 1.0
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+summary
+\end_layout
+
+\begin_layout Standard
+"batch" is a crash extension.
+ 
+\end_layout
+
+\begin_layout Standard
+You can find crash here:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://people.redhat.com/anderson/crash_whitepaper
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+"batch" is an interpreter.
+ It give crash the ability to run script.
+ It support a C like style script language.
+ Generally you can call a crash command, and store the command output to
+ a variable.
+ Then get a part of the command output, transfer it to another crash command.For
+ example, you know a super_block address is "ffff81087d829400", and you
+ want to know the gendisk address corresponding to the super block.First,
+ you should find the block_device address:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+crash> struct super_block.s_bdev ffff81087d829400
+\end_layout
+
+\begin_layout Plain Layout
+
+  s_bdev = 0xffff81087e1fbb80,  
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then, you find the gendisk from the block_device:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+crash> struct block_device.bd_disk 0xffff81087e1fbb80
+\end_layout
+
+\begin_layout Plain Layout
+
+  bd_disk = 0xffff81087f70e400,  
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use batch, you can write it as a script:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cmd = "struct super_block.s_bdev " + "ffff81087d829400"; 
+\end_layout
+
+\begin_layout Plain Layout
+
+callret = call(cmd);
+\end_layout
+
+\begin_layout Plain Layout
+
+getret = get(callret, 0, 11, 18);
+\end_layout
+
+\begin_layout Plain Layout
+
+cmd = "struct block_device.bd_disk " + getret;
+\end_layout
+
+\begin_layout Plain Layout
+
+callret = call(cmd); getret = get(callret, 0, 0, -1);
+\end_layout
+
+\begin_layout Plain Layout
+
+print getret;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+"call" and "get" are buildin functions.
+ "cmd", "callret", and "getret" are variables, and their type are string.
+ Transfer a string to "call" function, it will exectute it as a crash command,
+ and return the crash command output as a string.
+ In our example, we set the cmd varaible to a string:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cmd = "struct super_block.s_bdev " + "ffff81087d829400";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It will set the "cmd" varaible to string:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+"struct super_block.s_bdev ffff81087d829400"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then run the "call" function:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+callret = call(cmd);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It will run the crash command:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+struct super_block.s_bdev ffff81087d829400
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And store the output to variable "callret".
+ So after run that line, the value of "callret" will be:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+"  s_bdev = 0xffff81087e1fbb80, "
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+"get" function can get a substring of a string.
+ It has 4 parameters, the first one is the input string, the second one
+ specify which lines of the string, as the string may has many lines.
+ The third parameter specify we get the substring from which characters
+ on that line, and the fourth paramter specify how many characters we want
+ to get.
+\end_layout
+
+\begin_layout Standard
+So this line:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+getret = get(callret, 0, 11, 18);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+means we get the first line (0 means first line, 1 means second line, and
+ so on), from the 11th character, and get total 18 characters.
+\end_layout
+
+\begin_layout Standard
+The "callret" varaible only has one line, that is line 0.
+ Its 11th character is "0", from that character, we get 18 characters, the
+ result will be:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+"0xffff81087e1fbb80"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It will be store to "getret" variable.
+\end_layout
+
+\begin_layout Standard
+This line will print the string in variable getret:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+print getret;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The "print" function can print a string or number to screen.
+\end_layout
+
+\begin_layout Section
+how to install
+\end_layout
+
+\begin_layout Subsection
+Download the source code
+\end_layout
+
+\begin_layout Subsection
+Build from source code.
+\end_layout
+
+\begin_layout Standard
+Here is an article explain how to build a crash extention:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://people.redhat.com/anderson/crash_whitepaper/#SHARED_LIBRARY
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Generall, if you run crash on a x86_64 system, you can run:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+gcc -nostartfiles -shared -rdynamic -o batch.so batchcmd.c -fPIC -DX86_64
+ -D_FILE_OFFSET_BITS=64
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Run a crash session
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+crash vmcore vmlinux
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Use the "extend" command load batch.so file to crash
+\end_layout
+
+\begin_layout Standard
+copy the "batch.so" file to the current directory of crash session, then
+ use the 
+\begin_inset Quotes eld
+\end_inset
+
+extend
+\begin_inset Quotes erd
+\end_inset
+
+ command load the 
+\begin_inset Quotes eld
+\end_inset
+
+batch.so
+\begin_inset Quotes erd
+\end_inset
+
+ file.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+crash> extend batch.so
+\end_layout
+
+\begin_layout Plain Layout
+
+./batch.so: shared object loaded
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Write a script to test whether it can work
+\end_layout
+
+\begin_layout Standard
+For example, you create a file named "test.cr", and write one line to that
+ file:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+print "hello world";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then call "batch" command, and pass the script file name as parameter:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+crash> batch test.cr
+\end_layout
+
+\begin_layout Plain Layout
+
+hello world
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+The syntax of batch script
+\end_layout
+
+\begin_layout Standard
+The batch script is a very simple C-like language, each statement stop with
+ a ';'.
+\end_layout
+
+\begin_layout Subsection
+variable
+\end_layout
+
+\begin_layout Standard
+Identifiers for variables are alphanumeric sequences, and may include the
+ underscore (_) characters.
+ They may not start with a plain digit.
+ The batch script support two kind of variable, the "long" type and the
+ "string" type.
+\end_layout
+
+\begin_layout Standard
+Create a "long" type variable:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+a_long_variable = 10;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Create a "string" type variable:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+a_string_variable = "hello world";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+loop
+\end_layout
+
+\begin_layout Standard
+general syntax:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+while (exp) stmt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+count = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+total = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+while (count < 10) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    	total = total + count;
+\end_layout
+
+\begin_layout Plain Layout
+
+    	count = count + 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note: until now, the loop don't support "break" or "continue".
+\end_layout
+
+\begin_layout Subsection
+if
+\end_layout
+
+\begin_layout Standard
+general syntax
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (exp) stmt1 [ else stmt2 ]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+a = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+if (a == 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+    	print "a is zero";
+\end_layout
+
+\begin_layout Plain Layout
+
+else
+\end_layout
+
+\begin_layout Plain Layout
+
+    	print "a is not zero";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+comment
+\end_layout
+
+\begin_layout Standard
+Both of 
+\begin_inset Quotes eld
+\end_inset
+
+#
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+//
+\begin_inset Quotes erd
+\end_inset
+
+ are OK.
+\end_layout
+
+\begin_layout Section
+build in function
+\end_layout
+
+\begin_layout Subsection
+call
+\end_layout
+
+\begin_layout Standard
+prototype
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+call:string(command_name:string)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The "call" function need a string type parameter, then run this string as
+ a crash command.
+ The return value of "call" function is a string, it is the output of the
+ crash command.
+\end_layout
+
+\begin_layout Standard
+example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+a = call("sys");
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After run the "call" function, the output of the crash "sys" will be store
+ in variable "a".
+ It may be something like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+      KERNEL: vmlinux
+\end_layout
+
+\begin_layout Plain Layout
+
+    DUMPFILE: localhost_vmcore  [PARTIAL DUMP]
+\end_layout
+
+\begin_layout Plain Layout
+
+        CPUS: 16
+\end_layout
+
+\begin_layout Plain Layout
+
+        DATE: Tue Nov  1 19:22:45 2011
+\end_layout
+
+\begin_layout Plain Layout
+
+      UPTIME: 28 days, 00:48:26
+\end_layout
+
+\begin_layout Plain Layout
+
+LOAD AVERAGE: 1.11, 1.11, 1.12
+\end_layout
+
+\begin_layout Plain Layout
+
+       TASKS: 886
+\end_layout
+
+\begin_layout Plain Layout
+
+    NODENAME: localhost
+\end_layout
+
+\begin_layout Plain Layout
+
+     RELEASE: 2.6.18-194.26.1.el5
+\end_layout
+
+\begin_layout Plain Layout
+
+     VERSION: #1 SMP Fri Oct 29 14:21:16 EDT 2010
+\end_layout
+
+\begin_layout Plain Layout
+
+     MACHINE: x86_64  (2266 Mhz)
+\end_layout
+
+\begin_layout Plain Layout
+
+      MEMORY: 63.1 GB
+\end_layout
+
+\begin_layout Plain Layout
+
+       PANIC: "SysRq : Trigger a crashdump"
+\end_layout
+
+\begin_layout Plain Layout
+
+         PID: 24446      COMMAND: "bash"
+\end_layout
+
+\begin_layout Plain Layout
+
+        TASK: ffff810cf4b33820  [THREAD_INFO: ffff810da301e000]
+\end_layout
+
+\begin_layout Plain Layout
+
+         CPU: 8
+\end_layout
+
+\begin_layout Plain Layout
+
+       STATE: TASK_RUNNING (SYSRQ) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+get
+\end_layout
+
+\begin_layout Standard
+prototype
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+get:string(command_output:string, lines:long, start:long, len:long)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The "get" function can return a substring of an input string.
+ Generally, it is used to get a part of a crash command's output.
+ "command_output" is a string, "lines" specific which line of the string.
+ "start" is specific we get the substring from which characters on the specific
+ line, "len" specific we get how many characters.
+ If "len" is -1, means get until the end of this line.
+\end_layout
+
+\begin_layout Standard
+example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+a = call("sys");
+\end_layout
+
+\begin_layout Plain Layout
+
+b = get(a, 4, 14, 23);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus, the string "Tue Nov 1 19:22:45 2011" will be stored in variable b.
+\end_layout
+
+\begin_layout Subsection
+lines
+\end_layout
+
+\begin_layout Standard
+prototype
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lines:long(command_output:string)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Input a string, then return how many lines the string contains.
+\end_layout
+
+\begin_layout Subsection
+len
+\end_layout
+
+\begin_layout Standard
+prototype
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+len:long(command_output:string)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Return the length of the input string.
+\end_layout
+
+\begin_layout Subsection
+generic math calculate and logic function
+\end_layout
+
+\begin_layout Standard
++ , - , * , / , >= , <= , != , && , ||
+\end_layout
+
+\end_body
+\end_document
