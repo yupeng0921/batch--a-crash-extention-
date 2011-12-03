@@ -28,7 +28,7 @@
 
 #define STR_TO_LONG(str) atoll(str)
 
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define DBG(fmt, args...) fprintf(stdout, "(batchdbg, %s:%d) " fmt, __FUNCTION__, __LINE__, ##args)
 #else
