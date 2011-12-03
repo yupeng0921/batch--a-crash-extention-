@@ -83,21 +83,14 @@ nodeType *con_str(const char *sptr)
 
 	DBG("come in function\n");
 	nodeSize = SIZEOF_NODETYPE(p) + sizeof(strNodeType);
-	DBG("malloc test\n");
-	DBG("nodeSize=%d\n", nodeSize);
 	p = malloc(nodeSize);
-	sleep(1);
-	DBG("malloc test\n");
-	sleep(1);
 	if (p == NULL) {
 		yyerror("con_str, malloc node failed!\n");
 		return NULL;
 	}
 
 	len = strlen(sptr);
-	DBG("malloc test\n");
 	p->strCon.ptr = malloc(len+1);
-	DBG("malloc test\n");
 	if (p->strCon.ptr == NULL) {
 		yyerror("con_str, mallco string failed!\n");
 		free(p);
@@ -376,7 +369,6 @@ itpType *interpret(nodeType *p)
 		memcpy(pret, &symtab[p->var.index], nodeSize);
 		if (pret->type == typeStr) {
 			len = strlen(pret->pstr);
-			free(pret->pstr);
 			pret->pstr = malloc(len + 1);
 			if (pret->pstr == NULL) {
 				yyerror("interpret, typeVar malloc failed\n");
@@ -385,8 +377,6 @@ itpType *interpret(nodeType *p)
 			}
 			strncpy(pret->pstr, symtab[p->var.index].pstr, len);
 			pret->pstr[len] = '\0';
-			char *testptr;
-			testptr = symtab[p->var.index].pstr;
 		}
 		DBG_INTERPRET(pret);
 		return pret;
@@ -459,21 +449,9 @@ itpType *interpret(nodeType *p)
 			if (pret2->type == typeLong)
 				symtab[p->opr.op[0]->var.index].ival = pret2->ival;
 			else if (pret2->type == typeStr) {
-				char *s;
-				int n;
 				if (symtab[p->opr.op[0]->var.index].type == typeStr)
 					free(symtab[p->opr.op[0]->var.index].pstr);
-				n = strlen(pret2->pstr);
-				s = malloc(n + 1);
-				if (s == NULL) {
-					yyerror("malloc on copy string failed\n");
-					free(pret2);
-					return NULL;
-				}
-				strncpy(s, pret2->pstr, n);
-				s[n] = '\0';
-				symtab[p->opr.op[0]->var.index].pstr = s;
-				DBG("string addr: %p", s);
+				symtab[p->opr.op[0]->var.index].pstr = pret2->pstr;
 			}
 			symtab[p->opr.op[0]->var.index].type = pret2->type;
 			free(pret2); /* do not free pret2->pstr, as it is used by the variable */
