@@ -15,4 +15,4 @@ whole:
 clean:
 	rm -rf batch.so
 clean_whole:
-	rm -rf batch.so y_tab.c  lex.yy.c
+	rm -rf batch.so y.tab.c  lex.yy.c

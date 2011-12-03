@@ -3,6 +3,7 @@
 void initSymTable()
 {
 	int i;
+	DBG("come in function\n");
 	for (i = 0 ; i < MAX_SYMNUM ; i++) {
 		symtab[i].name = NULL;
 		symtab[i].pstr = NULL;
@@ -13,6 +14,7 @@ void initSymTable()
 int symname_lookup(const char *symname)
 {
 	int i;
+	DBG("come in function\n");
 	for (i = 0 ; i < symtop ; i++) {
 		if (!strcmp(symtab[i].name, symname))
 			return i;
@@ -23,6 +25,7 @@ int symname_lookup(const char *symname)
 int symname_install(const char *symname)
 {
 	int ret;
+	DBG("come in function\n");
 	ret = symname_lookup(symname);
 	if (ret != SYM_NOTFOUND)
 		return ret;
@@ -37,11 +40,24 @@ int symname_install(const char *symname)
 	return (symtop - 1);
 }
 
+#define DBG_NODE(p) DBG("p->type=%d ", p->type);			\
+	if(p->type == typeLongCon)					\
+		DBG("var=%lld\n", p->longCon.var);			\
+	else if (p->type == typeStrCon)				\
+		DBG("ptr=%s\n", p->strCon.ptr);				\
+	else if (p->type == typeVar)					\
+		DBG("index=%d\n", p->var.index);			\
+	else if (p->type == typeOpr)					\
+		DBG("name=%d number=%d\n", p->opr.name, p->opr.number);	\
+	else								\
+		DBG("unknown node type\n")
+
 nodeType *con_long(LONG value)
 {
 	nodeType *p;
 	size_t nodeSize;
 
+	DBG("come in function\n");
 	nodeSize = SIZEOF_NODETYPE(p) + sizeof(longNodeType);
 	p = malloc(nodeSize);
 	if (p == NULL) {
@@ -51,6 +67,7 @@ nodeType *con_long(LONG value)
 
 	p->type = typeLongCon;
 	p->longCon.var = value;
+	DBG_NODE(p);
 	return p;
 }
 
@@ -60,6 +77,7 @@ nodeType *con_str(const char *sptr)
 	nodeType *p;
 	size_t nodeSize;
 
+	DBG("come in function\n");
 	nodeSize = SIZEOF_NODETYPE(p) + sizeof(strNodeType);
 	p = malloc(nodeSize);
 	if (p == NULL) {
@@ -79,6 +97,7 @@ nodeType *con_str(const char *sptr)
 	strncpy(p->strCon.ptr, sptr, len);
 	p->strCon.ptr[len] = '\0';
 
+	DBG_NODE(p);
 	return p;
 }
 
@@ -88,6 +107,7 @@ nodeType *var(const char *sptr)
 	nodeType *p;
 	size_t nodeSize;
 
+	DBG("come in function\n");
 	index = symname_lookup(sptr);
 	if (index == SYM_NOTFOUND) {
 		yyerror("symbol not define");
@@ -103,6 +123,8 @@ nodeType *var(const char *sptr)
 
 	p->type = typeVar;
 	p->var.index = index;
+
+	DBG_NODE(p);
 	return p;
 }
 
@@ -113,6 +135,7 @@ nodeType *opr(int oper, int nops, ...)
 	size_t nodeSize;
 	int i;
 
+	DBG("come in function\n");
 	nodeSize = SIZEOF_NODETYPE(p) + sizeof(oprNodeType) +\
 		(nops - 1) * sizeof(nodeType *);
 	p = malloc(nodeSize);
@@ -133,12 +156,15 @@ nodeType *opr(int oper, int nops, ...)
 		}
 	}
 	va_end(ap);
+
+	DBG_NODE(p);
 	return p;
 }
 
 void freeNode(nodeType *p)
 {
 	int i;
+	DBG("come in function\n");
 	if (!p)
 		return;
 	if (p->type == typeOpr) {
@@ -153,6 +179,7 @@ void freeNode(nodeType *p)
 void freeSymTable()
 {
 	int i;
+	DBG("come in function\n");
 	for (i = 0 ; i < symtop ; i++) {
 		if (symtab[i].type == typeStr) {
 			free(symtab[i].pstr);
@@ -170,6 +197,7 @@ char *call_func(const char *input)
 	long len;
 	int ret;
 
+	DBG("come in function\n");
 	ret = call_crash_cmd(input);
 	if (ret < 0)
 		return NULL;
@@ -226,6 +254,7 @@ char *get_func(const char *input, long lineno,long start, long len)
 	char *input1;
 	int i;
 
+	DBG("come in function\n");
 	for (i = 0 ; i < lineno ; i++) {
 		input = strchr(input, '\n');
 		if (input == NULL)
@@ -255,6 +284,8 @@ LONG lines_func(const char *input)
 {
 	LONG count;
 
+	DBG("come in function\n");
+
 	if (!input || strlen(input) == 0)
 		return 0;
 	count = 0;
@@ -272,23 +303,33 @@ LONG lines_func(const char *input)
 
 void free_itpType(itpType *pret)
 {
+	DBG("come in function\n");
+	if (pret == NULL)
+		return;
 	if (pret->type == typeStr && pret->pstr)
 		free(pret->pstr);
 	free(pret);
 }
 
-#define DBG_INTERPRET(pret) DBG("pret->type=%d ", pret->type);		\
-	if(pret->type == typeStr) DBG("pstr=%s\n", pret->pstr);		\
-	else DBG("ival=%d\n", pret->ival)
+#define DBG_INTERPRET(pret) DBG("pret->type=%d ", pret->type);	\
+	if(pret->type == typeStr)					\
+		DBG("pstr=%s\n", pret->pstr);				\
+	else if (pret->type == typeLongCon)				\
+		DBG("ival=%d\n", pret->ival);				\
+	else								\
+		DBG("unknown itpType type\n")
+
 itpType *interpret(nodeType *p)
 {
 	int nodeSize;
 	int len, n;
 	itpType *pret, *pret1, *pret2, *pret3, *pret4;
 
+	DBG("come in function\n");
 	if (p == NULL)
 		return NULL;
 
+	DBG_NODE(p);
 	pret = malloc(sizeof(itpType));
 	if (pret == NULL) {
 		yyerror("interpret, malloc pret failed\n");
@@ -324,6 +365,7 @@ itpType *interpret(nodeType *p)
 		memcpy(pret, &symtab[p->var.index], nodeSize);
 		if (pret->type == typeStr) {
 			len = strlen(pret->pstr);
+			free(pret->pstr);
 			pret->pstr = malloc(len + 1);
 			if (pret->pstr == NULL) {
 				yyerror("interpret, typeVar malloc failed\n");
@@ -334,10 +376,6 @@ itpType *interpret(nodeType *p)
 			pret->pstr[len] = '\0';
 			char *testptr;
 			testptr = symtab[p->var.index].pstr;
-		} else {
-			yyerror("interpret, typeVal type is not typeStr\n");
-			free_itpType(pret);
-			return NULL;
 		}
 		DBG_INTERPRET(pret);
 		return pret;

@@ -12,7 +12,7 @@ letter		[a-zA-Z]
 variable	{letter}({letter}|{digit})*
 string		\"[^"\n]*["\n]
 
-comment		\/\/.*\n
+comment		(\/\/.*\n)|(\#.*\n)
 %%
                 char *s, *v;
 
@@ -78,7 +78,7 @@ comment		\/\/.*\n
 
 [ \t]+          ;       /* ignore whitespace */
 \n              { yylineno++; }
-{comment}	;
+{comment}	{ yylineno++; }
 .               yyerror("Unknown character");
 
 %%
