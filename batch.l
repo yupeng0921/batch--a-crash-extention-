@@ -8,7 +8,7 @@ xdigit		[0-9a-fA-F]
 dec_long	0|[1-9]{digit}*
 hex_long	0(x|X){xdigit}+
 
-letter		[a-zA-Z]
+letter		[a-zA-Z_]
 variable	{letter}({letter}|{digit})*
 string		\"[^"\n]*["\n]
 
