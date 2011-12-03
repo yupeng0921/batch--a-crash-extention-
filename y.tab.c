@@ -624,7 +624,7 @@ case 1:
 break;
 case 2:
 #line 37 "batch.y"
-	{ initSymTable();}
+	{ yylineno = 0; initSymTable();}
 break;
 case 3:
 #line 40 "batch.y"

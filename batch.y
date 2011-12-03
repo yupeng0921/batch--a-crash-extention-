@@ -34,7 +34,7 @@
 program:
 	init parsed	{ freeSymTable(); }
 	;
-init: /* NULL*/             { initSymTable();} 
+init: /* NULL*/             { yylineno = 0; initSymTable();}
   ;
 parsed:
     parsed stmt             { free(interpret($2)); freeNode($2); }
