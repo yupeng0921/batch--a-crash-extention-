@@ -79,6 +79,9 @@ void cmd_batch(void)
 }
 
 char *help_batch[] = {
-	"batch filename",
+	"batch",		/* command name */
+	"run a script",		/* short description */
+	"filename",		/* argument synopsis, or " " if none */
+	"  This command run a script which can call crash command",
 	NULL
 };
