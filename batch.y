@@ -34,7 +34,7 @@
 program:
 	init parsed	{ freeSymTable(); }
 	;
-init: /* NULL*/             { yylineno = 0; initSymTable();}
+init: /* NULL*/             { yylineno = 1; initSymTable();}
   ;
 parsed:
     parsed stmt             { free_itpType(interpret($2)); freeNode($2); }

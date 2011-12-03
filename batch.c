@@ -277,6 +277,9 @@ void free_itpType(itpType *pret)
 	free(pret);
 }
 
+#define DBG_INTERPRET(pret) DBG("pret->type=%d ", pret->type);		\
+	if(pret->type == typeStr) DBG("pstr=%s\n", pret->pstr);		\
+	else DBG("ival=%d\n", pret->ival)
 itpType *interpret(nodeType *p)
 {
 	int nodeSize;
@@ -299,6 +302,7 @@ itpType *interpret(nodeType *p)
 	case typeLongCon:
 		pret->ival = p->longCon.var;
 		pret->type = typeLong;
+		DBG_INTERPRET(pret);
 		return pret;
 		break;
 	case typeStrCon:
@@ -312,6 +316,7 @@ itpType *interpret(nodeType *p)
 		strncpy(pret->pstr, p->strCon.ptr, len);
 		pret->pstr[len] = '\0';
 		pret->type = typeStr;
+		DBG_INTERPRET(pret);
 		return pret;
 		break;
 	case typeVar:
@@ -329,7 +334,12 @@ itpType *interpret(nodeType *p)
 			pret->pstr[len] = '\0';
 			char *testptr;
 			testptr = symtab[p->var.index].pstr;
+		} else {
+			yyerror("interpret, typeVal type is not typeStr\n");
+			free_itpType(pret);
+			return NULL;
 		}
+		DBG_INTERPRET(pret);
 		return pret;
 		break;
 	case typeOpr:
@@ -352,6 +362,7 @@ itpType *interpret(nodeType *p)
 				}
 			}
 			free_itpType(pret1);
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case IF:
@@ -368,6 +379,7 @@ itpType *interpret(nodeType *p)
 				free_itpType(pret1);
 				free_itpType(pret2);
 			}
+			DBG_INTERPRET(pret);
 			return pret;
 		case PRINT:
 			pret1 = interpret(p->opr.op[0]);
@@ -378,6 +390,7 @@ itpType *interpret(nodeType *p)
 			else if (pret1->type == typeStr)
 				PRINTSTR(pret1);
 			free_itpType(pret1);
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case ';':
@@ -387,6 +400,7 @@ itpType *interpret(nodeType *p)
 				free_itpType(pret1);
 			if (pret2)
 				free_itpType(pret2);
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case '=':
@@ -402,6 +416,7 @@ itpType *interpret(nodeType *p)
 			}
 			symtab[p->opr.op[0]->var.index].type = pret2->type;
 			free(pret2); /* do not free pret2->pstr, as it is used by the variable */
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case UMINUS:
@@ -417,6 +432,7 @@ itpType *interpret(nodeType *p)
 				return NULL;
 			}
 			free_itpType(pret1);
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case PP:
@@ -428,6 +444,7 @@ itpType *interpret(nodeType *p)
 				free_itpType(pret);
 				return NULL;
 			}
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case SS:
@@ -439,6 +456,7 @@ itpType *interpret(nodeType *p)
 				free_itpType(pret);
 				return NULL;
 			}
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case '+':
@@ -457,6 +475,7 @@ itpType *interpret(nodeType *p)
 				pret->ival = pret1->ival + pret2->ival;
 				free_itpType(pret1);
 				free_itpType(pret2);
+				DBG_INTERPRET(pret);
 				return pret;
 			} else if (pret1->type == typeStr && pret2->type == typeStr) {
 				int m = strlen(pret1->pstr);
@@ -476,6 +495,7 @@ itpType *interpret(nodeType *p)
 				free_itpType(pret2);
 				pret->type = typeStr;
 				pret->pstr = s;
+				DBG_INTERPRET(pret);
 				return pret;
 			} else {
 				yyerror("add type not match\n");
@@ -529,6 +549,7 @@ itpType *interpret(nodeType *p)
 					pret->ival = pret1->ival <= pret2->ival;
 				free_itpType(pret1);
 				free_itpType(pret2);
+				DBG_INTERPRET(pret);
 				return pret;
 			} else {
 				yyerror("type not match\n");
@@ -558,6 +579,7 @@ itpType *interpret(nodeType *p)
 					pret->ival = pret1->ival != pret2->ival;
 				free_itpType(pret1);
 				free_itpType(pret2);
+				DBG_INTERPRET(pret);
 				return pret;
 			} else if (pret1->type == typeStr && pret2->type == typeStr) {
 				pret->type == typeLong;
@@ -568,6 +590,7 @@ itpType *interpret(nodeType *p)
 				}
 				free_itpType(pret1);
 				free_itpType(pret2);
+				DBG_INTERPRET(pret);
 				return pret;
 			} else {
 				yyerror("add type not match\n");
@@ -595,6 +618,7 @@ itpType *interpret(nodeType *p)
 				free_itpType(pret);
 				return NULL;
 			}
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case GET:
@@ -615,6 +639,7 @@ itpType *interpret(nodeType *p)
 			free_itpType(pret2);
 			free_itpType(pret3);
 			free_itpType(pret4);
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case LINES:
@@ -625,6 +650,7 @@ itpType *interpret(nodeType *p)
 			else
 				pret->ival = 0;
 			free_itpType(pret1);
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		case LEN:
@@ -635,6 +661,7 @@ itpType *interpret(nodeType *p)
 			else
 				pret->ival = 0;
 			free_itpType(pret1);
+			DBG_INTERPRET(pret);
 			return pret;
 			break;
 		default:
