@@ -95,12 +95,14 @@ nodeType *con_str(const char *sptr)
 	p->strCon.ptr = malloc(len+1);
 	if (p->strCon.ptr == NULL) {
 		yyerror("con_str, mallco string failed!\n");
+		free((void *)sptr);
 		free(p);
 		return NULL;
 	}
 
 	p->type = typeStrCon;
 	strncpy(p->strCon.ptr, sptr, len);
+	free((void *)sptr);
 	p->strCon.ptr[len] = '\0';
 
 	DBG_NODE(p);
