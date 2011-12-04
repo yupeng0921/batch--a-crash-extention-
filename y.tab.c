@@ -648,7 +648,7 @@ case 8:
 break;
 case 9:
 #line 49 "batch.y"
-	{ yyval.nPtr = ((yystack.l_mark[-1].nPtr == NULL)?NULL:(symname_install(yystack.l_mark[-3].pStr),opr('=', 2, var(yystack.l_mark[-3].pStr), yystack.l_mark[-1].nPtr)));}
+	{ int index; yyval.nPtr = ((yystack.l_mark[-1].nPtr == NULL)?NULL:(index = symname_install(yystack.l_mark[-3].pStr),opr('=', 2, var1(index), yystack.l_mark[-1].nPtr)));}
 break;
 case 10:
 #line 50 "batch.y"

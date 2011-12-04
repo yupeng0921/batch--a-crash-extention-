@@ -46,7 +46,7 @@ stmt:
     separator               { $$ = opr(';', 2, NULL, NULL);  }
   | expr separator          { $$ = opr(PRINT, 1, $1); }
   | PRINT expr separator    { $$ = opr(PRINT, 1, $2); }
-  | VARIABLE '=' expr separator     { $$ = (($3 == NULL)?NULL:(symname_install($1),opr('=', 2, var($1), $3)));}
+  | VARIABLE '=' expr separator     { int index; $$ = (($3 == NULL)?NULL:(index = symname_install($1),opr('=', 2, var1(index), $3)));}
   | WHILE '(' expr ')' stmt         { $$ = opr(WHILE, 2, $3, $5);  }
   | IF '(' expr ')' stmt %prec IFX  { $$ = opr(IF, 2, $3, $5); }
   | IF '(' expr ')' stmt ELSE stmt  { $$ = opr(IF, 3, $3, $5, $7); }

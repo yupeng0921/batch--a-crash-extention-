@@ -31,8 +31,10 @@ int symname_install(const char *symname)
 	int ret;
 	DBG("come in function\n");
 	ret = symname_lookup(symname);
-	if (ret != SYM_NOTFOUND)
+	if (ret != SYM_NOTFOUND) {
+		free((void *)symname);
 		return ret;
+	}
 
 	if (symtop > MAX_SYMNUM) {
 		yyerror("symbol table overflow\n");
@@ -115,6 +117,32 @@ nodeType *var(const char *sptr)
 	index = symname_lookup(sptr);
 	if (index == SYM_NOTFOUND) {
 		yyerror("symbol not define");
+		free((void *)sptr);
+		return NULL;
+	}
+
+	nodeSize = SIZEOF_NODETYPE(p) + sizeof(varNodeType);
+	p = malloc(nodeSize);
+	if (p == NULL) {
+		yyerror("var, malloc node failed\n");
+		return NULL;
+	}
+
+	p->type = typeVar;
+	p->var.index = index;
+
+	DBG_NODE(p);
+	return p;
+}
+
+nodeType *var1(int index)
+{
+	nodeType *p;
+	size_t nodeSize;
+
+	DBG("come in function\n");
+	if (index == SYM_NOTFOUND) {
+		yyerror("symbol not define");
 		return NULL;
 	}
 
@@ -189,6 +217,7 @@ void freeSymTable()
 			free(symtab[i].pstr);
 			symtab[i].pstr = NULL;
 		}
+		free((void *)(symtab[i].name));
 	}
 	symtop = 0;
 }
