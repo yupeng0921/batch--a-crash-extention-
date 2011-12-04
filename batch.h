@@ -14,6 +14,9 @@
 #define MAX_SYMLEN 512
 #define MAX_SYMNUM 1024
 
+#define MAX_ARG_NUM 11
+#define MAX_ARG_LEN 32
+
 #define SYM_NOTFOUND -1
 #define SYMTAB_OVERFLOW -2
 #define MEM_MALLOCERR -3
@@ -88,4 +91,8 @@ typedef struct symTypeTag {
 
 static symType symtab[MAX_SYMNUM];
 static int symtop = 0;
+
+static int batch_argcnt;
+static char batch_args[MAX_ARG_NUM][MAX_ARG_LEN];
+
 #endif

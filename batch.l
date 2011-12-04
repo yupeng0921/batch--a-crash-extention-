@@ -13,6 +13,7 @@ variable	{letter}({letter}|{digit})*
 string		\"[^"\n]*["\n]
 
 strparam	\@{digit}+
+longparam	\${digit}+
 
 comment		(\/\/.*\n)|(\#.*\n)
 %%
@@ -33,6 +34,9 @@ comment		(\/\/.*\n)|(\#.*\n)
 
 {strparam}	{ yylval.iValue = STR_TO_LONG(yytext+1);
 		  return STRPARAM;
+		}
+{longparam}	{ yylval.iValue = STR_TO_LONG(yytext+1);
+		  return LONGPARAM;
 		}
 
 {string}	{

@@ -63,9 +63,18 @@ int call_crash_cmd(const char *input)
 void cmd_batch(void)
 {
 	char *filename;
+	int i;
 	if (argcnt < 2) {
 		fprintf(fp, "please specific an input file\n");
 		return;
+	}
+
+	if (argcnt < MAX_ARG_NUM)
+		batch_argcnt = argcnt;
+	else
+		batch_argcnt = MAX_ARG_NUM;
+	for (i = 0 ; i < batch_argcnt ; i++) {
+		strncpy(batch_args[i], args[i], MAX_ARG_LEN);
 	}
 	filename = args[1];
 

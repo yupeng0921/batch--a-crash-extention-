@@ -171,7 +171,7 @@ nodeType *str_param(LONG n)
 
 	DBG("come in function\n");
 
-	if (n < 0 || n >=(argcnt - 1)) {
+	if (n < 0 || n >=(batch_argcnt - 1)) {
 		yyerror("invalid str param number");
 		return NULL;
 	}
@@ -200,9 +200,75 @@ nodeType *str_param(LONG n)
 	}
 
 	p->type = typeStrCon;
-	strncpy(p->strCon.ptr, args[shift], len);
+	strncpy(p->strCon.ptr, batch_args[shift], len);
 	p->strCon.ptr[len] = '\0';
 
+	DBG_NODE(p);
+	return p;
+}
+
+static inline LONG hexstr2long(const char *input)
+{
+	int i, len;
+	LONG val;
+	len = strlen(input);
+	i = 2;
+	val = 0;
+	while (i < len) {
+		if (islower(input[i]))
+			val = (val << 4) + input[i] - 'a' + 10;
+		else if (isupper(input[i]))
+			val = (val << 4) + input[i] - 'A' + 10;
+		else
+			val = (val << 4) + input[i] - '0';
+		i++;
+	}
+	return val;
+}
+
+static inline LONG str2long(const char *str)
+{
+	if (str[1] == 'x')
+		return hexstr2long(str);
+	else
+		return atoll(str);
+}
+
+nodeType *long_param(LONG n)
+{
+	nodeType *p;
+	const char *param;
+	int shift;
+	LONG value;
+	size_t nodeSize;
+
+	DBG("come in function\n");
+
+	if (n < 0 || n >=(batch_argcnt - 1)) {
+		yyerror("invalid str param number");
+		return NULL;
+	}
+	/*
+	 * input: 
+	 * batch test.cr param1 param2
+	 * args[0] is batch, args[1] is test.cr, args[2] is param1
+	 * We need:
+	 * $0 is test.cr, $1 param1, $2 is param2
+	 * so shift the input number
+	 */
+	shift = n + 1;
+	param = batch_args[shift];
+	value = str2long(param);
+
+	nodeSize = SIZEOF_NODETYPE(p) + sizeof(longNodeType);
+	p = malloc(nodeSize);
+	if (p == NULL) {
+		yyerror("con_long, malloc node failed!\n");
+		return NULL;
+	}
+
+	p->type = typeLongCon;
+	p->longCon.var = value;
 	DBG_NODE(p);
 	return p;
 }

@@ -69,6 +69,7 @@ expr:
   | STRING                  { $$ = con_str($1); }
   | VARIABLE                { $$ = var($1); }
   | STRPARAM		    { $$ = str_param($1); }
+  | LONGPARAM		    { $$ = long_param($1); }
   | '-' expr %prec UMINUS   { $$ = opr(UMINUS, 1, $2); }
   | VARIABLE PP             { $$ = ((var($1)==NULL) ? NULL: opr(PP, 1, var($1))); }
   | VARIABLE SS             { $$ = ((var($1)==NULL) ? NULL: opr(SS, 1, var($1))); }
