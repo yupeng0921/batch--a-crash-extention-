@@ -204,8 +204,8 @@ print getret;
 \begin_layout Standard
 "call" and "get" are buildin functions.
  "cmd", "callret", and "getret" are variables, and their type are string.
- Transfer a string to "call" function, it will exectute it as a crash command,
- and return the crash command output as a string.
+ Transfer a string to "call" function, it will exectute the string as a
+ crash command, and return the crash command output as a string.
  In our example, we set the cmd varaible to a string:
 \end_layout
 
@@ -329,8 +329,11 @@ Generall, if you run crash on a x86_64 system, you can run:
 \end_layout
 
 \begin_layout LyX-Code
-gcc -nostartfiles -shared -rdynamic -o batch.so batchcmd.c -fPIC -DX86_64
- -D_FILE_OFFSET_BITS=64
+gcc -nostartfiles -shared -rdynamic -o batch.so batchcmd.c 
+\end_layout
+
+\begin_layout LyX-Code
+-fPIC -DX86_64 -D_FILE_OFFSET_BITS=64
 \end_layout
 
 \begin_layout Subsection
@@ -548,6 +551,7 @@ command line parameters
 Use $1, $2, ...
  $<NN> obtain the long type parameters, Use @1, @2, ...
  @<NN> obtain the string type parameters.
+ And $# indicate the total parameters number.
  For example, if you run a batch script named 
 \begin_inset Quotes eld
 \end_inset
@@ -564,7 +568,15 @@ crash> batch test.cr a_string 0xff
 \end_layout
 
 \begin_layout Standard
-You can use @1 get the parameter 
+The parameters number $# is 3, the first parameter is the file name 
+\begin_inset Quotes eld
+\end_inset
+
+test.cr
+\begin_inset Quotes erd
+\end_inset
+
+, it is store in @0, and you can get the second parameter 
 \begin_inset Quotes eld
 \end_inset
 
@@ -572,7 +584,23 @@ a_string
 \begin_inset Quotes erd
 \end_inset
 
-, and use $2 get the parameter 0xff.
+ by @1, get the third parameter 0xff by 
+\begin_inset Quotes eld
+\end_inset
+
+#1
+\begin_inset Quotes erd
+\end_inset
+
+, You can also get a string 
+\begin_inset Quotes eld
+\end_inset
+
+0xff
+\begin_inset Quotes erd
+\end_inset
+
+ by @1.
 \end_layout
 
 \begin_layout Section
@@ -747,6 +775,89 @@ len:long(command_output:string)
 
 \begin_layout Standard
 Return the length of the input string.
+\end_layout
+
+\begin_layout Subsection
+str2long
+\end_layout
+
+\begin_layout Standard
+prototype
+\end_layout
+
+\begin_layout LyX-Code
+str2long:long(inputstring:string)
+\end_layout
+
+\begin_layout Standard
+Convert a string to its corresponding number, such as convert the string
+ 
+\begin_inset Quotes eld
+\end_inset
+
+0xff
+\begin_inset Quotes erd
+\end_inset
+
+ to number 255, convert the string 
+\begin_inset Quotes eld
+\end_inset
+
+128
+\begin_inset Quotes erd
+\end_inset
+
+ to number 128.
+\end_layout
+
+\begin_layout Subsection
+long2decstr
+\end_layout
+
+\begin_layout Standard
+prototype
+\end_layout
+
+\begin_layout LyX-Code
+long2decstr:string(inputnumber:long)
+\end_layout
+
+\begin_layout Standard
+Convert a number to dec format string, such as convert the number 128 to
+ string 
+\begin_inset Quotes eld
+\end_inset
+
+128
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+long2hexstr
+\end_layout
+
+\begin_layout Standard
+prototype
+\end_layout
+
+\begin_layout LyX-Code
+long2hexstr:string(inputnumber:long)
+\end_layout
+
+\begin_layout Standard
+Convert a number to hex format string, such as convert the number 255 to
+ string 
+\begin_inset Quotes eld
+\end_inset
+
+0xff
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
