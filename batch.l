@@ -12,6 +12,8 @@ letter		[a-zA-Z_]
 variable	{letter}({letter}|{digit})*
 string		\"[^"\n]*["\n]
 
+strparam	\@{digit}+
+
 comment		(\/\/.*\n)|(\#.*\n)
 %%
                 char *s, *v;
@@ -28,6 +30,10 @@ comment		(\/\/.*\n)|(\#.*\n)
 "str2long"	return STR2LONG;
 "long2decstr"	return LONG2DECSTR;
 "long2hexstr"	return LONG2HEXSTR;
+
+{strparam}	{ yylval.iValue = STR_TO_LONG(yytext+1);
+		  return STRPARAM;
+		}
 
 {string}	{
 			s = strdup(yytext+1);

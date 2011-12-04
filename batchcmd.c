@@ -63,7 +63,7 @@ int call_crash_cmd(const char *input)
 void cmd_batch(void)
 {
 	char *filename;
-	if (argcnt != 2) {
+	if (argcnt < 2) {
 		fprintf(fp, "please specific an input file\n");
 		return;
 	}

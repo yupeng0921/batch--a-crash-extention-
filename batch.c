@@ -88,6 +88,7 @@ nodeType *con_str(const char *sptr)
 	p = malloc(nodeSize);
 	if (p == NULL) {
 		yyerror("con_str, malloc node failed!\n");
+		free((void *)sptr);
 		return NULL;
 	}
 
@@ -157,6 +158,50 @@ nodeType *var1(int index)
 
 	p->type = typeVar;
 	p->var.index = index;
+
+	DBG_NODE(p);
+	return p;
+}
+
+nodeType *str_param(LONG n)
+{
+	int len, shift;
+	nodeType *p;
+	size_t nodeSize;
+
+	DBG("come in function\n");
+
+	if (n < 0 || n >=(argcnt - 1)) {
+		yyerror("invalid str param number");
+		return NULL;
+	}
+	/*
+	 * input: 
+	 * batch test.cr param1 param2
+	 * args[0] is batch, args[1] is test.cr, args[2] is param1
+	 * We need:
+	 * @0 is test.cr, @1 param1, @2 is param2
+	 * so shift the input number
+	 */
+	shift = n + 1;
+	nodeSize = SIZEOF_NODETYPE(p) + sizeof(strNodeType);
+	p = malloc(nodeSize);
+	if (p == NULL) {
+		yyerror("con_str, malloc node failed!\n");
+		return NULL;
+	}
+
+	len = strlen(args[shift]);
+	p->strCon.ptr = malloc(len+1);
+	if (p->strCon.ptr == NULL) {
+		yyerror("con_str, mallco string failed!\n");
+		free(p);
+		return NULL;
+	}
+
+	p->type = typeStrCon;
+	strncpy(p->strCon.ptr, args[shift], len);
+	p->strCon.ptr[len] = '\0';
 
 	DBG_NODE(p);
 	return p;
