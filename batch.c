@@ -845,6 +845,19 @@ itpType *interpret(nodeType *p)
 			DBG_INTERPRET(pret);
 			return pret;
 			break;
+		case STR2LONG:
+			pret1 = interpret(p->opr.op[0]);
+			pret->type = typeLong;
+			if (pret1->type != typeStr) {
+				yyerror("str2long need a string as param\n");
+				free_itpType(pret1);
+				free_itpType(pret);
+				return NULL;
+			}
+			pret->ival = str2long(pret1->pstr);
+			free_itpType(pret1);
+			return pret;
+			break;
 		default:
 			yyerror("bad operator!\n");
 		}
