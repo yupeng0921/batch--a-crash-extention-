@@ -15,6 +15,8 @@ string		\"[^"\n]*["\n]
 strparam	\@{digit}+
 longparam	\${digit}+
 
+paramnum	\$\#
+
 comment		(\/\/.*\n)|(\#.*\n)
 %%
                 char *s, *v;
@@ -38,6 +40,8 @@ comment		(\/\/.*\n)|(\#.*\n)
 {longparam}	{ yylval.iValue = STR_TO_LONG(yytext+1);
 		  return LONGPARAM;
 		}
+
+{paramnum}	{ return PARAMNUM; }
 
 {string}	{
 			s = strdup(yytext+1);

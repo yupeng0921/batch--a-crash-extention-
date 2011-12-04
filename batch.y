@@ -17,6 +17,8 @@
 %token <iValue> STRPARAM
 %token <iValue> LONGPARAM
 
+%token PARAMNUM
+
 %type <nPtr> stmt expr stmt_list function
 
 %token WHILE IF PRINT
@@ -70,6 +72,7 @@ expr:
   | VARIABLE                { $$ = var($1); }
   | STRPARAM		    { $$ = str_param($1); }
   | LONGPARAM		    { $$ = long_param($1); }
+  | PARAMNUM		    { $$ = param_num(); }
   | '-' expr %prec UMINUS   { $$ = opr(UMINUS, 1, $2); }
   | VARIABLE PP             { $$ = ((var($1)==NULL) ? NULL: opr(PP, 1, var($1))); }
   | VARIABLE SS             { $$ = ((var($1)==NULL) ? NULL: opr(SS, 1, var($1))); }

@@ -17,6 +17,8 @@
 #define MAX_ARG_NUM 11
 #define MAX_ARG_LEN 32
 
+#define MAX_CONVERT_STRLEN 256
+
 #define SYM_NOTFOUND -1
 #define SYMTAB_OVERFLOW -2
 #define MEM_MALLOCERR -3

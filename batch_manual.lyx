@@ -153,92 +153,52 @@ http://people.redhat.com/anderson/crash_whitepaper
  you should find the block_device address:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 crash> struct super_block.s_bdev ffff81087d829400
 \end_layout
 
-\begin_layout Plain Layout
-
-  s_bdev = 0xffff81087e1fbb80,  
-\end_layout
-
-\end_inset
-
-
+\begin_layout LyX-Code
+  s_bdev = 0xffff81087e1fbb80, 
 \end_layout
 
 \begin_layout Standard
 Then, you find the gendisk from the block_device:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 crash> struct block_device.bd_disk 0xffff81087e1fbb80
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
   bd_disk = 0xffff81087f70e400,  
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 Use batch, you can write it as a script:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 cmd = "struct super_block.s_bdev " + "ffff81087d829400"; 
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 callret = call(cmd);
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 getret = get(callret, 0, 11, 18);
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 cmd = "struct block_device.bd_disk " + getret;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 callret = call(cmd); getret = get(callret, 0, 0, -1);
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 print getret;
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -249,76 +209,32 @@ print getret;
  In our example, we set the cmd varaible to a string:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 cmd = "struct super_block.s_bdev " + "ffff81087d829400";
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 It will set the "cmd" varaible to string:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 "struct super_block.s_bdev ffff81087d829400"
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 Then run the "call" function:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 callret = call(cmd);
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 It will run the crash command:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 struct super_block.s_bdev ffff81087d829400
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -326,19 +242,8 @@ And store the output to variable "callret".
  So after run that line, the value of "callret" will be:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 "  s_bdev = 0xffff81087e1fbb80, "
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -354,19 +259,8 @@ status open
 So this line:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 getret = get(callret, 0, 11, 18);
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -380,19 +274,8 @@ The "callret" varaible only has one line, that is line 0.
  result will be:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 "0xffff81087e1fbb80"
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -403,19 +286,8 @@ It will be store to "getret" variable.
 This line will print the string in variable getret:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 print getret;
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -456,39 +328,17 @@ http://people.redhat.com/anderson/crash_whitepaper/#SHARED_LIBRARY
 Generall, if you run crash on a x86_64 system, you can run:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 gcc -nostartfiles -shared -rdynamic -o batch.so batchcmd.c -fPIC -DX86_64
  -D_FILE_OFFSET_BITS=64
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
 Run a crash session
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 crash vmcore vmlinux
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -516,24 +366,12 @@ batch.so
  file.
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 crash> extend batch.so
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 ./batch.so: shared object loaded
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -545,43 +383,20 @@ For example, you create a file named "test.cr", and write one line to that
  file:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 print "hello world";
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 Then call "batch" command, and pass the script file name as parameter:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 crash> batch test.cr
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 hello world
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -605,42 +420,20 @@ Identifiers for variables are alphanumeric sequences, and may include the
  "string" type.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 Create a "long" type variable:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 a_long_variable = 10;
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
+\begin_layout Itemize
 Create a "string" type variable:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 a_string_variable = "hello world";
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -651,63 +444,36 @@ loop
 general syntax:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 while (exp) stmt
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 example:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 count = 0;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 total = 0;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 while (count < 10) {
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
     	total = total + count;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
     	count = count + 1;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 }
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -722,58 +488,32 @@ if
 general syntax
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 if (exp) stmt1 [ else stmt2 ]
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
 example:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 a = 1;
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 if (a == 0)
 \end_layout
 
-\begin_layout Plain Layout
-
-    	print "a is zero";
+\begin_layout LyX-Code
+	print "a is zero";
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 else
 \end_layout
 
-\begin_layout Plain Layout
-
-    	print "a is not zero";
-\end_layout
-
-\end_inset
-
-
+\begin_layout LyX-Code
+    print "a is not zero";
 \end_layout
 
 \begin_layout Subsection
@@ -800,6 +540,41 @@ Both of
  are OK.
 \end_layout
 
+\begin_layout Subsection
+command line parameters
+\end_layout
+
+\begin_layout Standard
+Use $1, $2, ...
+ $<NN> obtain the long type parameters, Use @1, @2, ...
+ @<NN> obtain the string type parameters.
+ For example, if you run a batch script named 
+\begin_inset Quotes eld
+\end_inset
+
+test.cr
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+crash> batch test.cr a_string 0xff
+\end_layout
+
+\begin_layout Standard
+You can use @1 get the parameter 
+\begin_inset Quotes eld
+\end_inset
+
+a_string
+\begin_inset Quotes erd
+\end_inset
+
+, and use $2 get the parameter 0xff.
+\end_layout
+
 \begin_layout Section
 build in function
 \end_layout
@@ -812,19 +587,8 @@ call
 prototype
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 call:string(command_name:string)
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -838,19 +602,8 @@ The "call" function need a string type parameter, then run this string as
 example:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 a = call("sys");
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -859,99 +612,72 @@ After run the "call" function, the output of the crash "sys" will be store
  It may be something like this:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
       KERNEL: vmlinux
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
     DUMPFILE: localhost_vmcore  [PARTIAL DUMP]
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
         CPUS: 16
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
         DATE: Tue Nov  1 19:22:45 2011
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
       UPTIME: 28 days, 00:48:26
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 LOAD AVERAGE: 1.11, 1.11, 1.12
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
        TASKS: 886
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
     NODENAME: localhost
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
      RELEASE: 2.6.18-194.26.1.el5
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
      VERSION: #1 SMP Fri Oct 29 14:21:16 EDT 2010
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
      MACHINE: x86_64  (2266 Mhz)
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
       MEMORY: 63.1 GB
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
        PANIC: "SysRq : Trigger a crashdump"
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
          PID: 24446      COMMAND: "bash"
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
         TASK: ffff810cf4b33820  [THREAD_INFO: ffff810da301e000]
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
          CPU: 8
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
        STATE: TASK_RUNNING (SYSRQ) 
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -962,19 +688,8 @@ get
 prototype
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 get:string(command_output:string, lines:long, start:long, len:long)
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -990,24 +705,12 @@ The "get" function can return a substring of an input string.
 example:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 a = call("sys");
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 b = get(a, 4, 14, 23);
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1022,19 +725,8 @@ lines
 prototype
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 lines:long(command_output:string)
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1049,19 +741,8 @@ len
 prototype
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
+\begin_layout LyX-Code
 len:long(command_output:string)
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard

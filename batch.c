@@ -273,6 +273,26 @@ nodeType *long_param(LONG n)
 	return p;
 }
 
+nodeType *param_num(void)
+{
+	nodeType *p;
+	size_t nodeSize;
+
+	DBG("come in function\n");
+
+	nodeSize = SIZEOF_NODETYPE(p) + sizeof(longNodeType);
+	p = malloc(nodeSize);
+	if (p == NULL) {
+		yyerror("con_long, malloc node failed!\n");
+		return NULL;
+	}
+
+	p->type = typeLongCon;
+	p->longCon.var = batch_argcnt - 1;
+	DBG_NODE(p);
+	return p;
+}
+
 nodeType *opr(int oper, int nops, ...)
 {
 	va_list ap;
@@ -857,6 +877,34 @@ itpType *interpret(nodeType *p)
 			pret->ival = str2long(pret1->pstr);
 			free_itpType(pret1);
 			return pret;
+			break;
+		case LONG2DECSTR:
+		case LONG2HEXSTR:
+			pret1 = interpret(p->opr.op[0]);
+			if (pret1->type != typeLong) {
+				yyerror("long2decstr need a number as param\n");
+				free_itpType(pret1);
+				free_itpType(pret);
+				return NULL;
+			} else {
+				char *s;
+				int len;
+				s = malloc(MAX_CONVERT_STRLEN);
+				if (s == NULL) {
+					yyerror("malloc for long2decstr failed\n");
+					free_itpType(pret1);
+					free_itpType(pret);
+					return NULL;
+				}
+				if (p->opr.name == LONG2DECSTR)
+					len = snprintf(s, MAX_CONVERT_STRLEN, "%lld", pret1->ival);
+				else
+					len = snprintf(s, MAX_CONVERT_STRLEN, "0x%llx", pret1->ival);
+				s[len] = '\0';
+				pret->type = typeStr;
+				pret->pstr = s;
+				return pret;
+			}
 			break;
 		default:
 			yyerror("bad operator!\n");
