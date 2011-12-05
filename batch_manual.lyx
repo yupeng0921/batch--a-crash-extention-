@@ -302,6 +302,20 @@ how to install
 Download the source code
 \end_layout
 
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/yupeng820921/batch--a-crash-extention-
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Build from source code.
 \end_layout
