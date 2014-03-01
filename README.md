@@ -3,8 +3,6 @@ batch--a-crash-extention-
 
 Here is a summary of "batch"
 
-Here is a summary of "batch"
-
 "batch" is a crash extension. 
 
 You can find crash here:
